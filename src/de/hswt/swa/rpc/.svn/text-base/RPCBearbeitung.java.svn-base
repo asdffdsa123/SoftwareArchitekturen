@@ -1,0 +1,124 @@
+/*
+ * Bearbeitung_1.java
+ */
+
+package de.hswt.swa.rpc;
+
+
+import java.net.Socket;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.File;
+import java.util.Date;
+import java.util.Vector;
+import java.text.SimpleDateFormat;
+import java.lang.reflect.Method;
+import de.hswt.swa.tools.StatisticsCalculator;
+
+
+public class RPCBearbeitung extends AnfrageBearbeitung {
+	
+	static StatisticsCalculator stat = new StatisticsCalculator();
+
+	public RPCBearbeitung(AbstractServer server, Socket anfrage) {
+		// Konstruktor der Vaterklasse initialisieren:
+		super(server, anfrage);
+		// evtl. Statistik-Maschine initialisieren
+		
+	}
+	
+	private void setVector(Vector values) {
+//...
+	}
+	
+	private double getSD() {
+		return 0;  //default
+	}
+
+	private String[] listeVerzeichnis(String vrz_name) {
+		// Nach Verzeichnis suchen:
+		File dir = new File(vrz_name);
+		if (dir.exists() && dir.isDirectory()) {
+			/* Das Verzeichnis existiert und
+			 * es handelt sich um ein Verzeichnis */
+			return dir.list();
+		} else {
+			// existiert nicht:
+			return new String[] { "existiert nicht" };
+		}
+	}
+
+	private String aktuelleUhrzeit() {
+		Date jetzt = new Date();
+		SimpleDateFormat formatter =
+			new SimpleDateFormat("HH:mm:ss '-' dd.MM.yyyy");
+
+		// Rückgabe:
+		return formatter.format(jetzt);
+	}
+
+	/* Die abstrakte Methode der Klasse Anfragebearbeitung
+	 * muss in dieser Klasse implementiert werden.
+	 * In ihr wird die Kommunikation mit dem Client abgebildet: */
+	public void kommuniziere() {
+		try {
+			// Streams initialisieren:
+			ObjectInputStream ois =
+				new ObjectInputStream(anfrage.getInputStream());
+
+			// Werte einlesen:
+			String methoden_Name = (String) ois.readObject();
+			Object[] methodenParameter = (Object[]) ois.readObject();
+
+			int parameterAnzahl = methodenParameter.length;
+			Class[] klassenTypen = new Class[parameterAnzahl];
+			for (int i = 0; i < parameterAnzahl; i++)
+				klassenTypen[i] = methodenParameter[i].getClass();
+
+			wln("------------------->");
+			wln("methoden_Name     = " + methoden_Name);
+
+			for (int i = 0; i < parameterAnzahl; i++)
+				wln(
+					"klassenTypen  ["
+						+ i
+						+ "]: "
+						+ klassenTypen[i].getName());
+			wln("methodenParameter: " + methodenParameter.length);
+
+			//Methode finden:
+			Method m =
+				this.getClass().getDeclaredMethod(methoden_Name, klassenTypen);
+
+			wln("gefundene Methode: " + m.toString());
+
+			Object ret = null;
+			if (m != null)
+				// gewünschte Methode aufrufen:
+				try {
+					w("Aufruf der Methode: ");
+					ret = m.invoke(this, methodenParameter);
+					wln("ok");
+				} catch (Exception e) {
+					/* Falls ein Fehler auftritt, wird die
+					 * Entsprechende Exception übertragen */
+					ret = e;
+				}
+
+			// Schreibenden Stream initialisieren:
+			ObjectOutputStream oos =
+				new ObjectOutputStream(anfrage.getOutputStream());
+
+			// Das evtl. Ergebnis senden:
+			oos.writeObject(ret == null ? "nuess" : ret);
+
+			// Kommunikationskanal schließen:
+			ois.close();
+			oos.close();
+			anfrage.close();
+		} catch (Exception e) {
+			wln("Fehler@kommuniziere: " + e.toString());
+		}
+	}
+
+}

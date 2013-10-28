@@ -1,0 +1,8 @@
+# Port for this server
+Port:1280
+
+# directory for fasta-files
+fastaDir:/home/lesske/blast/
+
+# temp directory for formatdb
+tmpDir:/home/lesske/blast/tmp

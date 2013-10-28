@@ -1,0 +1,31 @@
+10
+
+dir
+14
+svn+ssh://bb-x-ci.hswt.de/var/lib/svn/swa13/SW-ArchitekturWS13/src/de/hswt/swa
+svn+ssh://bb-x-ci.hswt.de/var/lib/svn/swa13
+
+
+
+2013-10-18T14:38:41.658838Z
+5
+lesske
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+5b2c292a-0e47-463c-a82a-5c71fd0fd931
+
+seq
+dir
+

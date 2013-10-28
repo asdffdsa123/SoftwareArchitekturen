@@ -1,0 +1,34 @@
+/*
+ * DemoServer_2.java
+ */
+
+package de.hswt.swa.rpc;
+
+import java.net.Socket;
+
+
+public class RPCServer extends AbstractServer {
+
+	public RPCServer() throws Exception {
+		// Konstruktor der Vaterklasse aufrufen:
+		super(3443);
+	}
+
+	protected AnfrageBearbeitung neueAnfrage(Socket anfrage) {
+		// erstellt ein neues Objekt vom Typ
+		// RPCBearbeitung, dass von der Klasse
+		// Anfragebearbeitung erbt:
+		return new RPCBearbeitung(this, anfrage);
+	}
+
+	public static void main(String args[]) {
+		try {
+			// starte ein neues Objekt vom Typ RPCServer
+			new RPCServer().start();
+		} catch (Exception e) {
+			// Fehler!
+			System.out.println(e);
+		}
+	}
+
+}
