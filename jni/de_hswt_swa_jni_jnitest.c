@@ -1,7 +1,7 @@
 #include "../bin/de_hswt_swa_jni_JNITest.h"
 #include <jni.h>
 #include <string.h>
-#include <sys/resource.h>
+#include <dirent.h> 
 
 
 void throwNPE(JNIEnv * env, const char* msg){
@@ -48,17 +48,32 @@ JNIEXPORT jstring JNICALL Java_de_hswt_swa_jni_JNITest_getDate(JNIEnv * env, jcl
     return (jstring) env->CallObjectMethod(date, toString);
 } 
 
+
 /*
  * Class:     de_hswt_swa_jni_JNITest
- * Method:    getMemorySize
- * Signature: ()I
+ * Method:    dir
+ * Signature: ()Ljava/util/List;
  */
-JNIEXPORT jlong JNICALL Java_de_hswt_swa_jni_JNITest_getMemorySize(JNIEnv *, jclass){
-    struct rusage usage;
-    getrusage(RUSAGE_CHILDREN, &usage);
-    return usage.ru_maxrss;
-}
+JNIEXPORT jobject JNICALL Java_de_hswt_swa_jni_JNITest_dir(JNIEnv * env, jclass unused){
+    jclass listclass = env->FindClass("java/util/ArrayList");
+    jmethodID listconstr = env->GetMethodID(listclass, "<init>", "()V");
+    jobject list = env->NewObject(listclass, listconstr);
+    jmethodID addMeth = env->GetMethodID(listclass, "add", "(Ljava/lang/Object;)Z");
+    DIR *d;
+    struct dirent *dir;
+    d = opendir(".");
+    if (d)
+    {
+      while ((dir = readdir(d)) != NULL)
+      {
+	env->CallBooleanMethod(list, addMeth, env->NewStringUTF(dir->d_name));
+      }
 
+      closedir(d);
+    }
+
+    return list;
+}
 
 
 

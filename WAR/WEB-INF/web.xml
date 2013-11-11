@@ -1,0 +1,19 @@
+
+<web-app>
+	<servlet>
+		<servlet-name>HelloService</servlet-name>
+		<servlet-class>de.hswt.swa.servlet.HalloWelt</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>HelloService</servlet-name>
+		<url-pattern>/hallo</url-pattern>
+	</servlet-mapping>
+	<servlet>
+		<servlet-name>ChatServlet</servlet-name>
+		<servlet-class>de.hswt.swa.servlet.ChatServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>ChatServlet</servlet-name>
+		<url-pattern>/chat</url-pattern>
+	</servlet-mapping>
+</web-app>
